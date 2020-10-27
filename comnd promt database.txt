@@ -1,0 +1,43 @@
+---------------------------------------------------------------------------------------
+Sql with command promt:
+
+mysql -u root (user: root) -p
+
+1. show database;
+2. use triggertask; (triggertask is a schema name)
+3. show tables;
+4. to change delimiter 
+	delimiter $$
+5. create table buffet(
+ 	cid int not null primary key auto_increment
+	age int,
+	age_type int);
+6. insert into buffet(cid,age,age_type) values(10,9,0);
+7. if else trigger
+	create trigger age_check
+	before insert
+	on buffet
+	for each row
+	begin
+	if new.age < 10 then
+	set new.age_type 0;
+	else
+	set new.age_type = 1;
+	end if;
+	end$$($$ is delimiter)
+**
+delimiter $$
+create trigger plevel_check1
+before insert
+on passengers
+for each row
+begin
+if new.join_date<str_to_date("01-01-2020","%d-%c-%Y") then
+set new.plevel=3;
+elseif new.join_date>= str_to_date("01-01-2020","%d-%c-%Y")
+and new.join_date< str_to_date("01-07-2020","%d-%c-%Y") then
+set new.plevel=2;
+else
+set new.plevel=1;
+end if;
+end $$

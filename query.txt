@@ -1,0 +1,211 @@
+1. Delete from cse311l.EMPLOYEES
+	Where EMPLOYEe_ID= 101
+2. Truncate cse311l.EMPLOYEES (table er row thkbe bt data thkbe na)
+3. Drop table cse311l.EMPLOYEEs (to remove table from schema)
+4. Select * From Employees
+	Select email From Employees (so select a single column)
+	Select email as 'Email ID' From Employees
+	Select Last_name as 'Name', salary/12 as 'Monthly_Salary' From EMPLOYEE
+	Select concat (Last_Name," is a ", job_id , " and gets ", salary/12) AS "Employee role and salary" From EMployees
+	Select Distinct Department_id from employee (kono number repitation thkle oita ekbr dekhabe)
+5.Describe employees;(shows table variable and primary key)
+
+6.Select employee_id,last_name,job_id,department_id
+       From Employees
+       Where department_id = 90;
+       is null jokhn null check krte hbe,
+       IN (100,101,201); jokhn 3 ta set search dbo
+
+7.Select employee_id,last_name,job_id,department_id
+       From Employees
+       Where department_id  IN (90,60,50) order by Employee_id Desc, salary (order er vitore order)
+
+8. Select last_name From Employees Where last_name LIKE "_o%";	
+        to use _ as a character-> Where Job_Id LIKE "AD\_%" ESCAPE "\\';
+
+       Select Last_name from employees where last_name like "%a%e%" or last_name like "%e%a%"
+9. //cartesian product://
+       select E.last_name, D.department_name, D.department_id
+       from employees as E, Departments as D
+10. Select e.employee_id,e.last_name,
+       d.department_id,d.location_id
+       From employees e,departments d
+       Where e.department_id = d.department_id;
+11. //join clause//
+        Select concat(worker.last_name,"works for",manager.last_name)
+        as "Employee<-> Manager"
+        From employees as worker JOIN employees as manager
+        on (worker.manager_id = manager.employee_id)
+        ORDER BY manager.Last_name;
+
+another example://
+	select e.last_name,e.job_id,d.department_id,d.department_name
+	from employees as e
+	join departments as d
+	on (e.Department_Id=d.department_id)
+	join locations as l
+	on (d.location_id=l.location_id)
+	where l.city="Toronto";
+12. Select e.last_name,e.department_id,d.department_name
+	From employees as e
+	Left outer join Departments as d
+	On (e.department_id = d.department_id)
+	union
+	Select e.last_name,e.department_id,d.department_name
+	From employees as e
+	Right outer join Departments as d
+	On (e.department_id = d.department_id);
+13. to add from the same table
+SELECT concat(worker.last_name, " works for ",
+	manager.last_name) as "Employee <-> Manager"
+	FROM employees as worker, employees as manager
+	WHERE worker.manager_id = manager.employee_id
+	ORDER BY manager.Last_Name;
+another example
+	SELECT worker.last_name as "Employee",worker.employee_id as 
+	"EMP#",manager.last_name as "Manager",manager.employee_id as
+	"MGR#"
+	from employees as worker,employees as manager
+	where worker.employee_id=manager.Employee_Id
+	order by manager.employee_id;
+***********************
+Select e.employee_id,d.department_name, l.City
+From departments as d
+Left outer join employees as e
+On (e.Department_Id=d.Department_Id)
+Left outer join locations as l
+On (d.Location_id=l.Location_id)
+Where d.Department_Name="Accounting" or d.Department_Name="Contracting" and l.City="Seattle";
+***********************
+
+14. Select AVG(salary),Max(salary),Min(salary),sum(salary)
+	From employees
+	where job_id Like "%REP%";
+15. Who is the oldest employee
+min is for oldest max is for newest
+
+Select Min(hire_date),Max(hire_date)
+	From employees;
+16.how many manager in the company
+Select count(distinct(manager_id))
+	from employees;
+17. same department er moddhe group kore avrg salary or max salary
+Select department_id,Avg(salary)
+	from employees
+	group by department_id;
+
+18. Select job_id,Sum(salary) Payroll
+	From employees 
+	where job_id Not LIKE "%REP%"
+	Group By job_id
+	having Sum(salary) > 13000
+	order by Sum(salary);
+
+19. nesting: 
+	Select Max(avg(salary))
+	from employees
+	group by departments_id;
+
+20. Select round(avg(salary),3)
+    doshomik er por koto ghor dekhte chai oita lekhte hbe. eikhane 3 ghor dekhabe.kono ghor
+    dekhaite na chaile 0 dileo hbe or kisu na dileo hbe
+
+
+21. single row subquery
+	SELECT last_name
+	FROM employees
+	WHERE salary >(SELECT salary
+	FROM employees
+	WHERE last_name = 'Abel');
+
+another example: 
+	SELECT last_name, job_id, salary
+	FROM employees
+	WHERE job_id =
+
+	(SELECT job_id
+	FROM employees
+	WHERE employee_id = 141)
+
+	AND salary >
+
+	(SELECT salary
+	FROM employees
+	WHERE employee_id = 143);
+
+22. Multiple row subquery
+	SELECT employee_id, last_name, job_id, salary
+	FROM employees
+	WHERE salary < ANY
+
+	(SELECT salary
+	FROM employees
+	WHERE job_id = 'IT_PROG')
+
+	AND job_id <> 'IT_PROG';
+
+
+23. select Manager_id,min(salary)
+	from employees
+	where Manager_id is not null
+	group by manager_id
+	having min(salary)>6000
+	order by min(salary) desc;
+
+24. copy row from different table;
+	insert into sales_reps (id, name,salary,commission_pct)
+	select employee_id,last_name,salary,commission_pct
+	from employees
+	where job_id like "%REP%";
+	//sales_reps is the new table with new column
+To copy full table;
+	insert into copy_emp
+	select *
+	From employees;
+
+25. to change any data of a table;
+	update employees
+	set department_id = 70
+	where employee_id=113;
+
+update from different table
+	update copy_emp
+	set department_id = (select department_id
+				from employee
+				where employee_id = 100)
+	where job_id=(select job_id
+			from employees
+			where employee_id=144);
+
+26. Adding a column
+	Alter Table dept80
+	Add (job_id Varchar (9));
+
+    Modifying a column
+	Alter Table employees
+	Modify last_name Varchar(30);
+    Dropping a column 
+	Alter table employees
+	Drop Column Job_id;	
+    Changing a name of an object
+	Alter table employees
+	RENAME to emp;
+    Delete all data of a table
+	Truncate Table employees;
+
+27. Primary Foreign key;
+	Alter table employees
+	Add Constraint dept_id_fk
+	Foreign Key (department_id)
+	References departments (department_id);
+
+28. To View a table;
+	create view salaryView50 
+	as select employee_id ID,Last_name name, salary*12 annual_sal
+	from Employees
+	where department_id = 50;
+
+	select * from salaryView50;
+
+
+
